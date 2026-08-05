@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
+import heroFallback from './assets/hero.png'
 
 const trialSlots = [
   {
@@ -29,8 +30,19 @@ const trialSlots = [
 ]
 
 const storageKey = 'shooting-acad-workflow-v1'
+const flowActions = ['trial', 'registration', 'enroll']
 
 function App() {
+  const carouselImages = [
+    '/gallery/shot-4.jpeg',
+    '/gallery/shot-3.jpeg',
+    '/gallery/shot-2.jpeg',
+    '/gallery/shot-1.jpeg',
+  ]
+
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   const programs = [
     {
       title: 'Beginner Marksmanship',
@@ -89,6 +101,11 @@ function App() {
     enrollment: '',
   })
 
+  const [activeFlow, setActiveFlow] = useState('trial')
+  const trialFormRef = useRef(null)
+  const registrationFormRef = useRef(null)
+  const enrollmentFormRef = useRef(null)
+
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey)
     if (saved) {
@@ -99,6 +116,27 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify(workflowData))
   }, [workflowData])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const action = params.get('action')
+    if (action && flowActions.includes(action)) {
+      setActiveFlow(action)
+      window.setTimeout(() => {
+        scrollToFlow(action)
+      }, 120)
+    }
+  }, [])
+
+  useEffect(() => {
+    const sliderTimer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % carouselImages.length)
+    }, 3200)
+
+    return () => {
+      window.clearInterval(sliderTimer)
+    }
+  }, [carouselImages.length])
 
   const slotStats = useMemo(() => {
     return trialSlots.map((slot) => {
@@ -148,6 +186,31 @@ function App() {
   const liveCandidateEmail =
     enrollmentForm.email || registrationForm.email || trialForm.email || 'Not provided yet'
 
+  function updateFlowUrl(flow) {
+    const url = new URL(window.location.href)
+    url.searchParams.set('action', flow)
+    window.history.replaceState({}, '', url)
+  }
+
+  function scrollToFlow(flow) {
+    const flowRefMap = {
+      trial: trialFormRef,
+      registration: registrationFormRef,
+      enroll: enrollmentFormRef,
+    }
+
+    const targetRef = flowRefMap[flow]
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  function handleFlowSelect(flow) {
+    setActiveFlow(flow)
+    updateFlowUrl(flow)
+    scrollToFlow(flow)
+  }
+
   function handleTrialBooking(event) {
     event.preventDefault()
 
@@ -183,6 +246,7 @@ function App() {
           ? `Booked successfully. Your trial ID is ${trialId}.`
           : `Slot is full. You are added to waitlist with ID ${trialId}.`,
     }))
+    handleFlowSelect('registration')
 
     setRegistrationForm((prev) => ({
       ...prev,
@@ -245,6 +309,7 @@ function App() {
       ...prev,
       registration: 'Registration completed. Candidate moved to Registered stage.',
     }))
+    handleFlowSelect('enroll')
   }
 
   function handleEnrollment(event) {
@@ -295,12 +360,37 @@ function App() {
         <nav className="topbar" aria-label="Main navigation">
           <p className="brand">IRON SIGHT ACADEMY</p>
           <div className="topbar-actions">
-            <div className="links">
-              <a href="#programs">Programs</a>
-              <a href="#schedule">Schedule</a>
-              <a href="#admissions">Admissions</a>
-              <a href="#coaches">Coaches</a>
-              <a href="#contact">Contact</a>
+            <button
+              type="button"
+              className="menu-toggle"
+              aria-expanded={isMenuOpen}
+              aria-controls="primary-nav-links"
+              aria-label="Toggle navigation"
+              onClick={() => setIsMenuOpen((open) => !open)}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <div
+              id="primary-nav-links"
+              className={isMenuOpen ? 'links links-open' : 'links'}
+            >
+              <a href="#programs" onClick={() => setIsMenuOpen(false)}>
+                Programs
+              </a>
+              <a href="#schedule" onClick={() => setIsMenuOpen(false)}>
+                Schedule
+              </a>
+              <a href="#admissions" onClick={() => setIsMenuOpen(false)}>
+                Admissions
+              </a>
+              <a href="#coaches" onClick={() => setIsMenuOpen(false)}>
+                Coaches
+              </a>
+              <a href="#contact" onClick={() => setIsMenuOpen(false)}>
+                Contact
+              </a>
             </div>
           </div>
         </nav>
@@ -323,19 +413,110 @@ function App() {
             </div>
           </div>
 
-          <aside className="hero-panel" aria-label="Academy highlights">
-            <p>Live Range Hours</p>
-            <h2>42</h2>
-            <span>hours / week</span>
-            <hr />
-            <p>Student Success Rate</p>
-            <h2>94%</h2>
-            <span>qualification pass rate</span>
+          <aside className="hero-carousel" aria-label="Academy image gallery">
+            <img
+              className="hero-carousel-image"
+              src={carouselImages[activeSlide]}
+              alt={`Academy moment ${activeSlide + 1}`}
+              onError={(event) => {
+                if (!event.currentTarget.src.includes('hero.png')) {
+                  event.currentTarget.src = heroFallback
+                }
+              }}
+            />
+            <div className="carousel-dots" aria-label="Gallery slides">
+              {carouselImages.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={index === activeSlide ? 'carousel-dot is-active' : 'carousel-dot'}
+                  onClick={() => setActiveSlide(index)}
+                  aria-label={`Show slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </aside>
         </div>
       </header>
 
+      <section className="section cta" id="contact">
+        <div>
+          <p className="kicker">Ready To Start?</p>
+          <h2>Join The Next Intro Batch</h2>
+          <p className="muted">Phone: +1 (555) 014-8899 | Email: admissions@ironsightacademy.com</p>
+        </div>
+        <a className="btn btn-primary" href="#admissions">
+          Reserve Your Spot
+        </a>
+      </section>
+
+      <section className="section qr-actions" aria-label="Admissions quick actions">
+        <p className="kicker">Scan And Choose</p>
+        <h2>Open The Right Flow Instantly</h2>
+        <p className="muted">Use one QR link and let each person pick Trial, Registration, or Enrollment.</p>
+        <div className="flow-actions">
+          <button
+            type="button"
+            className={activeFlow === 'trial' ? 'flow-chip is-active' : 'flow-chip'}
+            onClick={() => handleFlowSelect('trial')}
+          >
+            Schedule Trial
+          </button>
+          <button
+            type="button"
+            className={activeFlow === 'registration' ? 'flow-chip is-active' : 'flow-chip'}
+            onClick={() => handleFlowSelect('registration')}
+          >
+            Registration
+          </button>
+          <button
+            type="button"
+            className={activeFlow === 'enroll' ? 'flow-chip is-active' : 'flow-chip'}
+            onClick={() => handleFlowSelect('enroll')}
+          >
+            Enrollment
+          </button>
+        </div>
+      </section>
+
+      <section className="section video-feature" aria-label="Academy intro video">
+        <div className="section-head">
+          <p className="kicker">Watch Academy Story</p>
+          <h2>See The Training Spirit In Action</h2>
+        </div>
+        <div className="video-frame">
+          <iframe
+            src="https://www.youtube.com/embed/Zw4XRD3hoNg"
+            title="Shooting academy intro video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </section>
+
       <main>
+        <section className="section" id="coaches">
+          <div className="section-head">
+            <p className="kicker">Instruction Team</p>
+            <h2>Meet Your Coaches</h2>
+          </div>
+          <div className="coach-grid">
+            <article>
+              <h3>Coach Aarav Singh</h3>
+              <p>Former national-level competitor focused on speed + accuracy under pressure.</p>
+            </article>
+            <article>
+              <h3>Coach Maya Thompson</h3>
+              <p>Specialist in first-time shooter confidence and defensive fundamentals.</p>
+            </article>
+            <article>
+              <h3>Coach Daniel Cruz</h3>
+              <p>Range safety lead and tactical movement instructor with 12+ years experience.</p>
+            </article>
+          </div>
+        </section>
+
         <section className="section" id="programs">
           <div className="section-head">
             <p className="kicker">Training Paths</p>
@@ -406,7 +587,12 @@ function App() {
 
           <div className="admissions-layout">
             <div className="admissions-grid">
-              <form className="workflow-card" onSubmit={handleTrialBooking}>
+              <form
+                ref={trialFormRef}
+                id="trial-flow"
+                className={activeFlow === 'trial' ? 'workflow-card is-focused' : 'workflow-card'}
+                onSubmit={handleTrialBooking}
+              >
                 <div className="workflow-card-head">
                   <p className="workflow-step">Step 1</p>
                   <h3>Schedule Trial</h3>
@@ -469,7 +655,12 @@ function App() {
                 {feedback.trial ? <p className="form-note">{feedback.trial}</p> : null}
               </form>
 
-              <form className="workflow-card" onSubmit={handleRegistration}>
+              <form
+                ref={registrationFormRef}
+                id="registration-flow"
+                className={activeFlow === 'registration' ? 'workflow-card is-focused' : 'workflow-card'}
+                onSubmit={handleRegistration}
+              >
                 <div className="workflow-card-head">
                   <p className="workflow-step">Step 2</p>
                   <h3>Registration</h3>
@@ -528,7 +719,12 @@ function App() {
                 {feedback.registration ? <p className="form-note">{feedback.registration}</p> : null}
               </form>
 
-              <form className="workflow-card" onSubmit={handleEnrollment}>
+              <form
+                ref={enrollmentFormRef}
+                id="enroll-flow"
+                className={activeFlow === 'enroll' ? 'workflow-card is-focused' : 'workflow-card'}
+                onSubmit={handleEnrollment}
+              >
                 <div className="workflow-card-head">
                   <p className="workflow-step">Step 3</p>
                   <h3>Enrollment</h3>
@@ -642,38 +838,8 @@ function App() {
           </div>
         </section>
 
-        <section className="section" id="coaches">
-          <div className="section-head">
-            <p className="kicker">Instruction Team</p>
-            <h2>Meet Your Coaches</h2>
-          </div>
-          <div className="coach-grid">
-            <article>
-              <h3>Coach Aarav Singh</h3>
-              <p>Former national-level competitor focused on speed + accuracy under pressure.</p>
-            </article>
-            <article>
-              <h3>Coach Maya Thompson</h3>
-              <p>Specialist in first-time shooter confidence and defensive fundamentals.</p>
-            </article>
-            <article>
-              <h3>Coach Daniel Cruz</h3>
-              <p>Range safety lead and tactical movement instructor with 12+ years experience.</p>
-            </article>
-          </div>
-        </section>
       </main>
 
-      <footer className="section cta" id="contact">
-        <div>
-          <p className="kicker">Ready To Start?</p>
-          <h2>Join The Next Intro Batch</h2>
-          <p className="muted">Phone: +1 (555) 014-8899 | Email: admissions@ironsightacademy.com</p>
-        </div>
-        <a className="btn btn-primary" href="#home">
-          Reserve Your Spot
-        </a>
-      </footer>
     </div>
   )
 }
