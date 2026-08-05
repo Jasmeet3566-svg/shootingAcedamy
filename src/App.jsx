@@ -2,46 +2,36 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import heroFallback from './assets/hero.png'
 
-const trialSlots = [
-  {
-    id: 'slot-mon-beginner',
-    label: 'Mon 6:00 PM - Beginner Marksmanship',
-    day: 'Monday',
-    time: '6:00 PM - 7:00 PM',
-    program: 'Beginner Marksmanship',
-    capacity: 6,
-  },
-  {
-    id: 'slot-wed-tactical',
-    label: 'Wed 6:30 PM - Tactical Pistol Track',
-    day: 'Wednesday',
-    time: '6:30 PM - 7:30 PM',
-    program: 'Tactical Pistol Track',
-    capacity: 5,
-  },
-  {
-    id: 'slot-sat-competition',
-    label: 'Sat 9:00 AM - Competition Prep Lab',
-    day: 'Saturday',
-    time: '9:00 AM - 10:00 AM',
-    program: 'Competition Prep Lab',
-    capacity: 4,
-  },
+const trialDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const trialTimes = [
+  '10:00 AM - 11:00 AM',
+  '11:00 AM - 12:00 PM',
+  '12:00 PM - 1:00 PM',
+  '1:00 PM - 2:00 PM',
+  '2:00 PM - 3:00 PM',
+  '3:00 PM - 4:00 PM',
+  '4:00 PM - 5:00 PM',
+  '5:00 PM - 6:00 PM',
+  '6:00 PM - 7:00 PM',
+  '7:00 PM - 8:00 PM',
 ]
 
 const storageKey = 'shooting-acad-workflow-v1'
 const flowActions = ['trial', 'registration', 'enroll']
+const academyName = 'Trinetra Sports Shooting Acadmey'
+const trialNotificationEmail = 'jasmeetdahiya3566@gmail.com'
 
 function App() {
   const carouselImages = [
-    '/gallery/shot-4.jpeg',
+    '/gallery/shot-5.jpeg',
     '/gallery/shot-3.jpeg',
     '/gallery/shot-2.jpeg',
-    '/gallery/shot-1.jpeg',
+    '/gallery/shot-4.jpeg',
   ]
 
   const [activeSlide, setActiveSlide] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isTrialPopupOpen, setIsTrialPopupOpen] = useState(false)
 
   const programs = [
     {
@@ -69,27 +59,20 @@ function App() {
 
   const [workflowData, setWorkflowData] = useState({
     trialBookings: [],
-    registrations: [],
     enrollments: [],
   })
 
   const [trialForm, setTrialForm] = useState({
     fullName: '',
-    email: '',
     phone: '',
-    slotId: trialSlots[0].id,
-  })
-
-  const [registrationForm, setRegistrationForm] = useState({
-    fullName: '',
-    email: '',
-    emergencyContact: '',
-    waiverAccepted: false,
+    age: '',
+    trialDay: trialDays[0],
+    trialTime: trialTimes[0],
   })
 
   const [enrollmentForm, setEnrollmentForm] = useState({
     fullName: '',
-    email: '',
+    phone: '',
     batch: 'Batch A - Evening',
     plan: '8 Weeks Foundation',
     paymentStatus: 'pending',
@@ -97,13 +80,11 @@ function App() {
 
   const [feedback, setFeedback] = useState({
     trial: '',
-    registration: '',
     enrollment: '',
   })
 
   const [activeFlow, setActiveFlow] = useState('trial')
   const trialFormRef = useRef(null)
-  const registrationFormRef = useRef(null)
   const enrollmentFormRef = useRef(null)
 
   useEffect(() => {
@@ -125,6 +106,7 @@ function App() {
       window.setTimeout(() => {
         scrollToFlow(action)
       }, 120)
+      clearFlowUrlParam()
     }
   }, [])
 
@@ -138,25 +120,22 @@ function App() {
     }
   }, [carouselImages.length])
 
-  const slotStats = useMemo(() => {
-    return trialSlots.map((slot) => {
-      const confirmed = workflowData.trialBookings.filter(
-        (booking) => booking.slotId === slot.id && booking.status === 'Trial Confirmed',
-      ).length
-      const waitlisted = workflowData.trialBookings.filter(
-        (booking) => booking.slotId === slot.id && booking.status === 'Waitlisted',
-      ).length
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('action')) {
+      return undefined
+    }
 
-      return {
-        ...slot,
-        confirmed,
-        waitlisted,
-        seatsLeft: Math.max(slot.capacity - confirmed, 0),
-      }
-    })
-  }, [workflowData.trialBookings])
+    const popupTimer = window.setTimeout(() => {
+      setIsTrialPopupOpen(true)
+    }, 750)
 
-  const registrationCount = workflowData.registrations.length
+    return () => {
+      window.clearTimeout(popupTimer)
+    }
+  }, [])
+
+  const trialRegistrationCount = workflowData.trialBookings.length
   const enrolledCount = workflowData.enrollments.filter((item) => item.status === 'Enrolled').length
   const pendingPaymentCount = workflowData.enrollments.filter(
     (item) => item.status === 'Enrollment Pending Payment',
@@ -164,38 +143,34 @@ function App() {
 
   const currentStep = useMemo(() => {
     if (enrolledCount > 0 || pendingPaymentCount > 0) {
-      return 3
-    }
-
-    if (registrationCount > 0) {
       return 2
     }
 
+    if (trialRegistrationCount > 0) {
+      return 1
+    }
+
     return 1
-  }, [enrolledCount, pendingPaymentCount, registrationCount])
+  }, [enrolledCount, pendingPaymentCount, trialRegistrationCount])
 
   const stepperItems = [
-    { id: 1, title: 'Trial' },
-    { id: 2, title: 'Registration' },
-    { id: 3, title: 'Enrollment' },
+    { id: 1, title: 'Trial + Registration' },
+    { id: 2, title: 'Enrollment' },
   ]
-
-  const selectedTrialSlot = slotStats.find((slot) => slot.id === trialForm.slotId)
   const liveCandidateName =
-    enrollmentForm.fullName || registrationForm.fullName || trialForm.fullName || 'Not provided yet'
-  const liveCandidateEmail =
-    enrollmentForm.email || registrationForm.email || trialForm.email || 'Not provided yet'
+    enrollmentForm.fullName || trialForm.fullName || 'Not provided yet'
+  const liveCandidatePhone = enrollmentForm.phone || trialForm.phone || 'Not provided yet'
 
-  function updateFlowUrl(flow) {
+  function clearFlowUrlParam() {
     const url = new URL(window.location.href)
-    url.searchParams.set('action', flow)
+    url.searchParams.delete('action')
     window.history.replaceState({}, '', url)
   }
 
   function scrollToFlow(flow) {
     const flowRefMap = {
       trial: trialFormRef,
-      registration: registrationFormRef,
+      registration: trialFormRef,
       enroll: enrollmentFormRef,
     }
 
@@ -206,22 +181,54 @@ function App() {
   }
 
   function handleFlowSelect(flow) {
-    setActiveFlow(flow)
-    updateFlowUrl(flow)
-    scrollToFlow(flow)
+    const normalizedFlow = flow === 'registration' ? 'trial' : flow
+    setActiveFlow(normalizedFlow)
+    scrollToFlow(normalizedFlow)
   }
 
-  function handleTrialBooking(event) {
-    event.preventDefault()
+  function openTrialFlowFromCta() {
+    setIsTrialPopupOpen(false)
+    handleFlowSelect('trial')
+  }
 
-    const selectedSlot = slotStats.find((slot) => slot.id === trialForm.slotId)
-    if (!selectedSlot) {
-      setFeedback((prev) => ({ ...prev, trial: 'Selected slot not found. Please try again.' }))
-      return
+  async function sendTrialRegistrationEmail(trialId, trialDetails) {
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${trialNotificationEmail}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `New Free Trial Registration - ${trialId}`,
+          _template: 'table',
+          _captcha: 'false',
+          bookingId: trialId,
+          fullName: trialDetails.fullName,
+          phone: trialDetails.phone,
+          age: trialDetails.age,
+          trialDay: trialDetails.trialDay,
+          trialTime: trialDetails.trialTime,
+          source: window.location.origin,
+        }),
+      })
+
+      return response.ok
+    } catch {
+      return false
     }
+  }
 
-    const status = selectedSlot.seatsLeft > 0 ? 'Trial Confirmed' : 'Waitlisted'
+  async function handleTrialBooking(event) {
+    event.preventDefault()
     const trialId = `TRIAL-${Date.now()}`
+    const submittedTrial = {
+      fullName: trialForm.fullName,
+      phone: trialForm.phone,
+      age: trialForm.age,
+      trialDay: trialForm.trialDay,
+      trialTime: trialForm.trialTime,
+    }
 
     setWorkflowData((prev) => ({
       ...prev,
@@ -229,100 +236,50 @@ function App() {
         ...prev.trialBookings,
         {
           trialId,
-          fullName: trialForm.fullName,
-          email: trialForm.email,
-          phone: trialForm.phone,
-          slotId: selectedSlot.id,
-          slotLabel: selectedSlot.label,
-          status,
+          ...submittedTrial,
+          status: 'Trial Scheduled + Registered',
         },
       ],
     }))
 
+    const emailSent = await sendTrialRegistrationEmail(trialId, submittedTrial)
+
     setFeedback((prev) => ({
       ...prev,
-      trial:
-        status === 'Trial Confirmed'
-          ? `Booked successfully. Your trial ID is ${trialId}.`
-          : `Slot is full. You are added to waitlist with ID ${trialId}.`,
+      trial: emailSent
+        ? `Trial and registration completed. Your booking ID is ${trialId}. Confirmation mail sent.`
+        : `Trial and registration completed. Your booking ID is ${trialId}. Email send failed, please retry.`,
     }))
-    handleFlowSelect('registration')
 
-    setRegistrationForm((prev) => ({
-      ...prev,
-      fullName: trialForm.fullName,
-      email: trialForm.email,
-    }))
+    handleFlowSelect('enroll')
 
     setEnrollmentForm((prev) => ({
       ...prev,
       fullName: trialForm.fullName,
-      email: trialForm.email,
+      phone: trialForm.phone,
     }))
 
     setTrialForm((prev) => ({
       ...prev,
       fullName: '',
-      email: '',
       phone: '',
+      age: '',
+      trialDay: trialDays[0],
+      trialTime: trialTimes[0],
     }))
-  }
-
-  function handleRegistration(event) {
-    event.preventDefault()
-
-    if (!registrationForm.waiverAccepted) {
-      setFeedback((prev) => ({
-        ...prev,
-        registration: 'Please accept the safety waiver before registration.',
-      }))
-      return
-    }
-
-    const hasTrial = workflowData.trialBookings.some(
-      (booking) => booking.email.toLowerCase() === registrationForm.email.toLowerCase(),
-    )
-
-    if (!hasTrial) {
-      setFeedback((prev) => ({
-        ...prev,
-        registration: 'No trial record found for this email. Book a trial first.',
-      }))
-      return
-    }
-
-    setWorkflowData((prev) => ({
-      ...prev,
-      registrations: [
-        ...prev.registrations,
-        {
-          registrationId: `REG-${Date.now()}`,
-          fullName: registrationForm.fullName,
-          email: registrationForm.email,
-          emergencyContact: registrationForm.emergencyContact,
-          status: 'Registered',
-        },
-      ],
-    }))
-
-    setFeedback((prev) => ({
-      ...prev,
-      registration: 'Registration completed. Candidate moved to Registered stage.',
-    }))
-    handleFlowSelect('enroll')
   }
 
   function handleEnrollment(event) {
     event.preventDefault()
 
-    const hasRegistration = workflowData.registrations.some(
-      (item) => item.email.toLowerCase() === enrollmentForm.email.toLowerCase(),
+    const hasTrialRegistration = workflowData.trialBookings.some(
+      (item) => item.phone.trim() === enrollmentForm.phone.trim(),
     )
 
-    if (!hasRegistration) {
+    if (!hasTrialRegistration) {
       setFeedback((prev) => ({
         ...prev,
-        enrollment: 'No registration found for this email. Complete registration first.',
+        enrollment: 'No trial registration found for this phone number. Complete trial booking first.',
       }))
       return
     }
@@ -337,7 +294,7 @@ function App() {
         {
           enrollmentId: `ENR-${Date.now()}`,
           fullName: enrollmentForm.fullName,
-          email: enrollmentForm.email,
+          phone: enrollmentForm.phone,
           batch: enrollmentForm.batch,
           plan: enrollmentForm.plan,
           status,
@@ -358,7 +315,19 @@ function App() {
     <div className="site-shell">
       <header className="hero" id="home">
         <nav className="topbar" aria-label="Main navigation">
-          <p className="brand">IRON SIGHT ACADEMY</p>
+          <div className="brand-wrap">
+            <img
+              className="brand-logo"
+              src="/trinetra-logo.jpeg"
+              alt="Trinetra Sports Shooting Acadmey logo"
+              onError={(event) => {
+                if (!event.currentTarget.src.includes('hero.png')) {
+                  event.currentTarget.src = heroFallback
+                }
+              }}
+            />
+            <p className="brand">{academyName.toUpperCase()}</p>
+          </div>
           <div className="topbar-actions">
             <button
               type="button"
@@ -443,7 +412,7 @@ function App() {
         <div>
           <p className="kicker">Ready To Start?</p>
           <h2>Join The Next Intro Batch</h2>
-          <p className="muted">Phone: +1 (555) 014-8899 | Email: admissions@ironsightacademy.com</p>
+          <p className="muted">Phone: +1 (555) 014-8899 | Email: admissions@trinetrasportsacademy.com</p>
         </div>
         <a className="btn btn-primary" href="#admissions">
           Reserve Your Spot
@@ -453,21 +422,14 @@ function App() {
       <section className="section qr-actions" aria-label="Admissions quick actions">
         <p className="kicker">Scan And Choose</p>
         <h2>Open The Right Flow Instantly</h2>
-        <p className="muted">Use one QR link and let each person pick Trial, Registration, or Enrollment.</p>
+        <p className="muted">Use one QR link and let each person pick Trial Registration or Enrollment.</p>
         <div className="flow-actions">
           <button
             type="button"
             className={activeFlow === 'trial' ? 'flow-chip is-active' : 'flow-chip'}
             onClick={() => handleFlowSelect('trial')}
           >
-            Schedule Trial
-          </button>
-          <button
-            type="button"
-            className={activeFlow === 'registration' ? 'flow-chip is-active' : 'flow-chip'}
-            onClick={() => handleFlowSelect('registration')}
-          >
-            Registration
+            Trial Registration
           </button>
           <button
             type="button"
@@ -556,7 +518,7 @@ function App() {
         <section className="section" id="admissions">
           <div className="section-head">
             <p className="kicker">Admissions Workflow</p>
-            <h2>Trial Scheduling, Registration, and Enrollment</h2>
+            <h2>Trial Registration and Enrollment</h2>
           </div>
 
           <div className="workflow-stepper" aria-label="Admissions progress">
@@ -573,18 +535,6 @@ function App() {
             })}
           </div>
 
-          <div className="slot-grid">
-            {slotStats.map((slot) => (
-              <article key={slot.id} className="slot-card">
-                <p className="level">{slot.day}</p>
-                <h3>{slot.program}</h3>
-                <p>{slot.time}</p>
-                <strong>{slot.seatsLeft} seats left</strong>
-                <span>{slot.waitlisted} on waitlist</span>
-              </article>
-            ))}
-          </div>
-
           <div className="admissions-layout">
             <div className="admissions-grid">
               <form
@@ -595,8 +545,8 @@ function App() {
               >
                 <div className="workflow-card-head">
                   <p className="workflow-step">Step 1</p>
-                  <h3>Schedule Trial</h3>
-                  <p className="workflow-help">Choose a slot and reserve your trial attempt.</p>
+                  <h3>Schedule Trial and Register</h3>
+                  <p className="workflow-help">Complete trial registration with day and one-hour time slot.</p>
                 </div>
                 <div className="field-grid field-grid-two">
                   <label>
@@ -623,100 +573,53 @@ function App() {
                   </label>
                 </div>
                 <label>
-                  Email
+                  Age
                   <input
                     required
-                    type="email"
-                    placeholder="name@email.com"
-                    value={trialForm.email}
+                    type="number"
+                    min="7"
+                    max="99"
+                    placeholder="Enter age"
+                    value={trialForm.age}
                     onChange={(event) =>
-                      setTrialForm((prev) => ({ ...prev, email: event.target.value }))
+                      setTrialForm((prev) => ({ ...prev, age: event.target.value }))
                     }
                   />
                 </label>
                 <label>
-                  Trial Slot
+                  Trial Day
                   <select
-                    value={trialForm.slotId}
+                    value={trialForm.trialDay}
                     onChange={(event) =>
-                      setTrialForm((prev) => ({ ...prev, slotId: event.target.value }))
+                      setTrialForm((prev) => ({ ...prev, trialDay: event.target.value }))
                     }
                   >
-                    {slotStats.map((slot) => (
-                      <option key={slot.id} value={slot.id}>
-                        {slot.label} ({slot.seatsLeft} seats)
+                    {trialDays.map((day) => (
+                      <option key={day} value={day}>
+                        {day}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Trial Time
+                  <select
+                    value={trialForm.trialTime}
+                    onChange={(event) =>
+                      setTrialForm((prev) => ({ ...prev, trialTime: event.target.value }))
+                    }
+                  >
+                    {trialTimes.map((time) => (
+                      <option key={time} value={time}>
+                        {time}
                       </option>
                     ))}
                   </select>
                 </label>
                 <button className="btn btn-primary" type="submit">
-                  Confirm Trial
+                  Confirm Trial Registration
                 </button>
                 {feedback.trial ? <p className="form-note">{feedback.trial}</p> : null}
-              </form>
-
-              <form
-                ref={registrationFormRef}
-                id="registration-flow"
-                className={activeFlow === 'registration' ? 'workflow-card is-focused' : 'workflow-card'}
-                onSubmit={handleRegistration}
-              >
-                <div className="workflow-card-head">
-                  <p className="workflow-step">Step 2</p>
-                  <h3>Registration</h3>
-                  <p className="workflow-help">Capture safety and contact details after trial booking.</p>
-                </div>
-                <label>
-                  Full Name
-                  <input
-                    required
-                    placeholder="Enter candidate name"
-                    value={registrationForm.fullName}
-                    onChange={(event) =>
-                      setRegistrationForm((prev) => ({ ...prev, fullName: event.target.value }))
-                    }
-                  />
-                </label>
-                <label>
-                  Email
-                  <input
-                    required
-                    type="email"
-                    placeholder="name@email.com"
-                    value={registrationForm.email}
-                    onChange={(event) =>
-                      setRegistrationForm((prev) => ({ ...prev, email: event.target.value }))
-                    }
-                  />
-                </label>
-                <label>
-                  Emergency Contact
-                  <input
-                    required
-                    placeholder="Emergency phone number"
-                    value={registrationForm.emergencyContact}
-                    onChange={(event) =>
-                      setRegistrationForm((prev) => ({ ...prev, emergencyContact: event.target.value }))
-                    }
-                  />
-                </label>
-                <label className="check-label">
-                  <input
-                    type="checkbox"
-                    checked={registrationForm.waiverAccepted}
-                    onChange={(event) =>
-                      setRegistrationForm((prev) => ({
-                        ...prev,
-                        waiverAccepted: event.target.checked,
-                      }))
-                    }
-                  />
-                  I accept the range safety waiver.
-                </label>
-                <button className="btn btn-primary" type="submit">
-                  Complete Registration
-                </button>
-                {feedback.registration ? <p className="form-note">{feedback.registration}</p> : null}
               </form>
 
               <form
@@ -726,7 +629,7 @@ function App() {
                 onSubmit={handleEnrollment}
               >
                 <div className="workflow-card-head">
-                  <p className="workflow-step">Step 3</p>
+                  <p className="workflow-step">Step 2</p>
                   <h3>Enrollment</h3>
                   <p className="workflow-help">Select batch and payment state to finalize enrollment.</p>
                 </div>
@@ -742,14 +645,13 @@ function App() {
                   />
                 </label>
                 <label>
-                  Email
+                  Phone
                   <input
                     required
-                    type="email"
-                    placeholder="name@email.com"
-                    value={enrollmentForm.email}
+                    placeholder="+1 000 000 0000"
+                    value={enrollmentForm.phone}
                     onChange={(event) =>
-                      setEnrollmentForm((prev) => ({ ...prev, email: event.target.value }))
+                      setEnrollmentForm((prev) => ({ ...prev, phone: event.target.value }))
                     }
                   />
                 </label>
@@ -808,20 +710,16 @@ function App() {
                   <strong>{liveCandidateName}</strong>
                 </div>
                 <div>
-                  <span>Email</span>
-                  <strong>{liveCandidateEmail}</strong>
+                  <span>Phone</span>
+                  <strong>{liveCandidatePhone}</strong>
                 </div>
                 <div>
-                  <span>Selected Slot</span>
-                  <strong>{selectedTrialSlot ? selectedTrialSlot.label : 'No slot selected'}</strong>
+                  <span>Trial Day</span>
+                  <strong>{trialForm.trialDay}</strong>
                 </div>
                 <div>
-                  <span>Seat Availability</span>
-                  <strong>
-                    {selectedTrialSlot
-                      ? `${selectedTrialSlot.seatsLeft} seats left / ${selectedTrialSlot.waitlisted} waitlisted`
-                      : 'Not available'}
-                  </strong>
+                  <span>Trial Time</span>
+                  <strong>{trialForm.trialTime}</strong>
                 </div>
                 <div>
                   <span>Batch Plan</span>
@@ -839,6 +737,39 @@ function App() {
         </section>
 
       </main>
+
+      <button
+        type="button"
+        className="trial-float-btn"
+        onClick={() => setIsTrialPopupOpen(true)}
+        aria-label="Open free trial popup"
+      >
+        Book Free Trial
+      </button>
+
+      {isTrialPopupOpen ? (
+        <div className="trial-popup-overlay" role="dialog" aria-modal="true" aria-label="Book free trial">
+          <div className="trial-popup-card">
+            <p className="kicker">Free Trial Available</p>
+            <h3>Book Your First Session</h3>
+            <p>
+              Start with a guided trial session and meet our instructors before full registration.
+            </p>
+            <div className="trial-popup-actions">
+              <button type="button" className="btn btn-primary" onClick={openTrialFlowFromCta}>
+                Book Free Trial
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setIsTrialPopupOpen(false)}
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
     </div>
   )
