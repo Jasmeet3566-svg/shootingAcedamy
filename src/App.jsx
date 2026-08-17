@@ -19,7 +19,94 @@ const trialTimes = [
 const storageKey = 'shooting-acad-workflow-v1'
 const flowActions = ['trial', 'registration', 'enroll']
 const academyName = 'Trinetra Sports Shooting Acadmey'
-const trialNotificationEmail = 'jasmeetdahiya3566@gmail.com'
+const trialNotificationEmail = 'trinetrasports26@gmail.com'
+const coaches = [
+  {
+    name: 'Coach Hemant Choudhary',
+    photo: '/gallery/shot-7.jpeg',
+    highlights: [
+      'Renowned competitive shooter',
+      'National Qualified Shooter in 10m & 25m pistol shooting',
+      'Experienced in national-level shooting competitions',
+      'Specialized in 10m Air Pistol & 25m Pistol',
+      'Strong focus on technique, concentration & mental strength',
+      'Expertise in precision, accuracy & consistency development',
+      'Dedicated to shooter training & athlete development',
+      'Focused on performance, match readiness & competitive skills',
+      'Committed to developing disciplined, confident shooters with a winning mindset',
+      'Passionate about nurturing the next generation of competitive shooters',
+    ],
+  },
+  {
+    name: 'Coach Himanshu Singh',
+    photo: '/gallery/shot-6.jpeg',
+    highlights: [
+      '7+ years of competitive 10m Air Pistol shooting experience',
+      '5-Time National Qualified shooter',
+      'Selected for India Team Trials',
+      'Competed in national-level shooting competitions',
+      '2+ years of professional coaching experience',
+      'Coaching experience at reputed schools in Noida & Greater Noida',
+      'Specialized in 10m Air Pistol & precision shooting',
+      'Expertise in mental conditioning & match strategy',
+      'Focus on performance analysis & athlete development',
+      'Dedicated to developing shooters from fundamentals to competitive level',
+      'Committed to discipline, consistency & high-performance training',
+    ],
+  },
+]
+const academyUpdates = [
+  {
+    keyword: 'Blog',
+    link: 'https://www.gunforglory.in/rifle-vs-pistol/',
+    summary: 'Rifle vs Pistol: 7 Ways to Know Which Is Right for You\n\nOne of the first questions every beginner asks before starting...',
+    image: '/gallery/shot-9.jpeg',
+  },
+  {
+    keyword: 'Blog',
+    summary: 'Understanding Air Pistols: A Beginner’s Guide to Shooting, Safety & Precision',
+    image: '/gallery/shot-10.jpeg',
+    content: [
+      {
+        paragraphs: [
+          'Shooting is a sport built on precision, concentration and discipline. Among the different shooting disciplines, 10-metre air pistol is one of the most technically demanding events, requiring the shooter to maintain excellent body control, consistent technique and strong mental focus.',
+          'At Trinetra Sports Shooting Academy, we believe that understanding the equipment and fundamentals of shooting is an important part of becoming a better athlete.',
+        ],
+      },
+      {
+        heading: 'What Is an Air Pistol?',
+        paragraphs: [
+          'An air pistol is a sporting firearm designed for target shooting using compressed air or another gas system to propel a pellet. In competitive 10-metre air pistol, athletes shoot at a standardized target from a distance of 10 metres.',
+          'Unlike many other shooting disciplines, the objective is not simply to fire quickly. The shooter must carefully control their body, breathing, aiming process and trigger release to produce a precise shot.',
+        ],
+      },
+      {
+        heading: 'The Five Important Elements of a Good Shot',
+        points: [
+          ['1. Stance', 'A stable stance provides the foundation for accurate shooting. The shooter should develop a comfortable and repeatable position that allows the body to remain balanced while the pistol is held steadily. Consistency is more important than trying to copy someone else’s exact stance.'],
+          ['2. Grip', 'A consistent grip helps the shooter control the pistol and maintain a repeatable shooting position. The grip should be stable without unnecessary tension. Excessive pressure can create unwanted movement and make it difficult to reproduce the same shot process.'],
+          ['3. Aiming', 'Aiming requires the shooter to align the sights correctly while maintaining concentration. Competitive shooters learn to focus on their sight alignment and develop a consistent visual routine before every shot.'],
+          ['4. Breathing', 'Breathing can influence stability. Shooters generally develop a controlled breathing routine and learn to establish a comfortable moment of stability before executing the shot.'],
+          ['5. Trigger Control', 'Trigger control is one of the most important aspects of precision shooting. A smooth and consistent trigger action helps prevent unnecessary movement of the pistol during the final stage of the shot. Developing this skill requires patience and structured practice.'],
+        ],
+      },
+      {
+        heading: 'The Importance of Mental Strength',
+        paragraphs: ['Shooting is not only a physical sport. Mental control can be just as important as technical ability.', 'A shooter may have excellent technique but still struggle if they become anxious after a poor shot or lose concentration during competition.'],
+        list: ['Stay focused on the current shot', 'Avoid overthinking previous shots', 'Maintain a consistent pre-shot routine', 'Control competition pressure', 'Accept mistakes and recover quickly', 'Focus on the process rather than only the score'],
+      },
+      {
+        heading: 'Why Safety Comes First',
+        paragraphs: ['Shooting sports must always be practiced under proper supervision and established range-safety procedures.', 'At Trinetra Sports Shooting Academy, safety and discipline are fundamental parts of training. Shooters should follow the instructions of qualified coaches and range officials, use equipment responsibly and never handle a sporting firearm outside the permitted conditions of the range.', 'Safety is not separate from shooting—it is an essential part of being a responsible shooter.'],
+      },
+      {
+        heading: 'From Technique to Performance',
+        paragraphs: ['Improvement in shooting does not happen overnight. It comes from developing a repeatable process and practising it consistently.', 'Instead of focusing only on the score, shooters should understand why a particular shot happened. This approach helps develop consistency and creates a stronger foundation for competitive performance.'],
+        cycle: 'Learn → Practise → Analyse → Correct → Repeat',
+      },
+    ],
+  },
+]
 
 function App() {
   const carouselImages = [
@@ -30,32 +117,10 @@ function App() {
   ]
 
   const [activeSlide, setActiveSlide] = useState(0)
+  const [expandedCoach, setExpandedCoach] = useState(null)
+  const [selectedArticle, setSelectedArticle] = useState(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isTrialPopupOpen, setIsTrialPopupOpen] = useState(false)
-
-  const programs = [
-    {
-      title: 'Beginner Marksmanship',
-      level: 'Level 01',
-      detail: 'Safety-first training, grip, stance, and controlled trigger drills for new shooters.',
-    },
-    {
-      title: 'Tactical Pistol Track',
-      level: 'Level 02',
-      detail: 'Holster work, movement, reload speed, and pressure-tested decision exercises.',
-    },
-    {
-      title: 'Competition Prep Lab',
-      level: 'Level 03',
-      detail: 'Stage planning, split-time improvement, and match-day routines for serious athletes.',
-    },
-  ]
-
-  const schedule = [
-    { day: 'Monday', slot: '6:00 PM - 8:00 PM', focus: 'Fundamentals + Safety' },
-    { day: 'Wednesday', slot: '6:00 PM - 8:30 PM', focus: 'Dynamic Range Drills' },
-    { day: 'Saturday', slot: '8:00 AM - 11:00 AM', focus: 'Scenario & Competition Blocks' },
-  ]
 
   const [workflowData, setWorkflowData] = useState({
     trialBookings: [],
@@ -157,9 +222,6 @@ function App() {
     { id: 1, title: 'Trial + Registration' },
     { id: 2, title: 'Enrollment' },
   ]
-  const liveCandidateName =
-    enrollmentForm.fullName || trialForm.fullName || 'Not provided yet'
-  const liveCandidatePhone = enrollmentForm.phone || trialForm.phone || 'Not provided yet'
 
   function clearFlowUrlParam() {
     const url = new URL(window.location.href)
@@ -348,8 +410,8 @@ function App() {
               <a href="#programs" onClick={() => setIsMenuOpen(false)}>
                 Programs
               </a>
-              <a href="#schedule" onClick={() => setIsMenuOpen(false)}>
-                Schedule
+              <a href="#updates" onClick={() => setIsMenuOpen(false)}>
+                Blogs &amp; News
               </a>
               <a href="#admissions" onClick={() => setIsMenuOpen(false)}>
                 Admissions
@@ -412,48 +474,35 @@ function App() {
         <div>
           <p className="kicker">Ready To Start?</p>
           <h2>Join The Next Intro Batch</h2>
-          <p className="muted">Phone: +1 (555) 014-8899 | Email: admissions@trinetrasportsacademy.com</p>
+          <p className="muted">Phone: 9971764244 && 9098914312 | Email: trinetrasports26@gmail.com </p>
         </div>
         <a className="btn btn-primary" href="#admissions">
           Reserve Your Spot
         </a>
       </section>
 
-      <section className="section qr-actions" aria-label="Admissions quick actions">
-        <p className="kicker">Scan And Choose</p>
-        <h2>Open The Right Flow Instantly</h2>
-        <p className="muted">Use one QR link and let each person pick Trial Registration or Enrollment.</p>
-        <div className="flow-actions">
-          <button
-            type="button"
-            className={activeFlow === 'trial' ? 'flow-chip is-active' : 'flow-chip'}
-            onClick={() => handleFlowSelect('trial')}
-          >
-            Trial Registration
-          </button>
-          <button
-            type="button"
-            className={activeFlow === 'enroll' ? 'flow-chip is-active' : 'flow-chip'}
-            onClick={() => handleFlowSelect('enroll')}
-          >
-            Enrollment
-          </button>
-        </div>
-      </section>
-
-      <section className="section video-feature" aria-label="Academy intro video">
+      <section className="section programs-overview" aria-label="Our programs">
         <div className="section-head">
-          <p className="kicker">Watch Academy Story</p>
-          <h2>See The Training Spirit In Action</h2>
+          <p className="kicker">Our Programs</p>
+          <h2>Find The Right Training Path</h2>
         </div>
-        <div className="video-frame">
-          <iframe
-            src="https://www.youtube.com/embed/Zw4XRD3hoNg"
-            title="Shooting academy intro video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          ></iframe>
+        <div className="programs-overview-grid">
+          <article className="program-card">
+            <h3>Beginner Program</h3>
+            <p>Learn the basics of shooting in a safe &amp; fun environment.</p>
+          </article>
+          <article className="program-card">
+            <h3>Intermediate Program</h3>
+            <p>Improve your skills, accuracy &amp; consistency.</p>
+          </article>
+          <article className="program-card">
+            <h3>Advanced &amp; Competition Program</h3>
+            <p>High performance training for competitions &amp; championships.</p>
+          </article>
+          <article className="program-card">
+            <h3>Special Programs</h3>
+            <p>School programs, holiday camps, corporate &amp; group sessions.</p>
+          </article>
         </div>
       </section>
 
@@ -463,55 +512,108 @@ function App() {
             <p className="kicker">Instruction Team</p>
             <h2>Meet Your Coaches</h2>
           </div>
-          <div className="coach-grid">
-            <article>
-              <h3>Coach Aarav Singh</h3>
-              <p>Former national-level competitor focused on speed + accuracy under pressure.</p>
-            </article>
-            <article>
-              <h3>Coach Maya Thompson</h3>
-              <p>Specialist in first-time shooter confidence and defensive fundamentals.</p>
-            </article>
-            <article>
-              <h3>Coach Daniel Cruz</h3>
-              <p>Range safety lead and tactical movement instructor with 12+ years experience.</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="section" id="programs">
-          <div className="section-head">
-            <p className="kicker">Training Paths</p>
-            <h2>Programs Built For Real Progress</h2>
-          </div>
-          <div className="card-grid">
-            {programs.map((program) => (
-              <article key={program.title} className="program-card">
-                <p className="level">{program.level}</p>
-                <h3>{program.title}</h3>
-                <p>{program.detail}</p>
+          <div className="coach-list">
+            {coaches.map((coach) => (
+              <article key={coach.name} className="coach-slide">
+                <div className="coach-photo">
+                  <img src={coach.photo} alt={coach.name} />
+                </div>
+                <div className="coach-about">
+                  <p className="coach-eyebrow">Meet the coach</p>
+                  <h3>{coach.name}</h3>
+                  <ul className="coach-highlights">
+                    {coach.highlights.slice(0, expandedCoach === coach.name ? coach.highlights.length : 4).map((highlight) => (
+                      <li key={highlight}>{highlight}</li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    className="coach-read-more"
+                    aria-expanded={expandedCoach === coach.name}
+                    onClick={() => setExpandedCoach((current) => (current === coach.name ? null : coach.name))}
+                  >
+                    {expandedCoach === coach.name ? 'Show less' : 'Read more'}
+                  </button>
+                </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="section split" id="schedule">
-          <div>
-            <p className="kicker">Weekly Rhythm</p>
-            <h2>Consistent Schedule, Serious Results</h2>
-            <p className="muted">
-              Every class mixes technical fundamentals with practical drills. Small groups ensure
-              direct instructor feedback for each shooter.
-            </p>
+        <section className="section video-feature" aria-label="Academy intro video">
+          <div className="section-head">
+            <p className="kicker">Watch Academy Story</p>
+            <h2>See The Training Spirit In Action</h2>
           </div>
-          <div className="schedule-board">
-            {schedule.map((item) => (
-              <div key={item.day} className="schedule-item">
-                <p>{item.day}</p>
-                <span>{item.slot}</span>
-                <strong>{item.focus}</strong>
-              </div>
-            ))}
+          <div className="video-frame">
+            <iframe
+              src="https://www.youtube.com/embed/Zw4XRD3hoNg"
+              title="Shooting academy intro video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </section>
+
+        <section className="section" id="programs">
+          <div className="section-head">
+            <p className="kicker">The Trinetra Difference</p>
+            <h2>Why Join Trinetra Sports Shooting Academy?</h2>
+          </div>
+          <div className="why-join">
+            <img
+              className="why-join-image"
+              src="/gallery/shot-8.jpeg"
+              alt="Trinetra Sports Shooting Academy training space"
+            />
+            <div className="why-join-list">
+              <p>World-class range with 8 premium lanes</p>
+              <p>Expert &amp; certified coaches with proven track record</p>
+              <p>Safe, modern &amp; technology-driven environment</p>
+              <p>Personalized training for every shooter</p>
+              <p>Structured programs for all age groups</p>
+              <p>Pathway to competitions, national &amp; international exposure</p>
+              <p>Focus on all-round development — mind, body &amp; character</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section" id="updates">
+          <div className="section-head">
+            <p className="kicker">Stay Informed</p>
+            <h2>Blogs &amp; News</h2>
+          </div>
+          <div className="updates-grid">
+            {academyUpdates.map((item) => {
+              const [headline, ...excerpt] = item.summary.split(/\n\s*\n/)
+
+              return (
+                <article key={item.link ?? item.summary} className="update-card">
+                  <img
+                    src={item.image}
+                    alt="Shooting academy blog article"
+                    onError={(event) => {
+                      event.currentTarget.src = '/gallery/shot-5.jpeg'
+                    }}
+                  />
+                  <div className="update-card-content">
+                    <p className="update-keyword">{item.keyword}</p>
+                    <h3>{headline}</h3>
+                    {excerpt.length ? <p>{excerpt.join(' ')}</p> : null}
+                    {item.content ? (
+                      <button type="button" className="update-read-more" onClick={() => setSelectedArticle(item)}>
+                        Read {item.keyword.toLowerCase()} <span aria-hidden="true">&rarr;</span>
+                      </button>
+                    ) : (
+                      <a href={item.link} target="_blank" rel="noreferrer">
+                        Read {item.keyword.toLowerCase()} <span aria-hidden="true">&rarr;</span>
+                      </a>
+                    )}
+                  </div>
+                </article>
+              )
+            })}
           </div>
         </section>
 
@@ -535,8 +637,7 @@ function App() {
             })}
           </div>
 
-          <div className="admissions-layout">
-            <div className="admissions-grid">
+          <div className="admissions-grid">
               <form
                 ref={trialFormRef}
                 id="trial-flow"
@@ -698,45 +799,69 @@ function App() {
                 </button>
                 {feedback.enrollment ? <p className="form-note">{feedback.enrollment}</p> : null}
               </form>
-            </div>
-
-            <aside className="summary-card" aria-label="Live admissions summary">
-              <h3>Live Summary</h3>
-              <p className="summary-tag">Current flow status</p>
-
-              <div className="summary-list">
-                <div>
-                  <span>Candidate</span>
-                  <strong>{liveCandidateName}</strong>
-                </div>
-                <div>
-                  <span>Phone</span>
-                  <strong>{liveCandidatePhone}</strong>
-                </div>
-                <div>
-                  <span>Trial Day</span>
-                  <strong>{trialForm.trialDay}</strong>
-                </div>
-                <div>
-                  <span>Trial Time</span>
-                  <strong>{trialForm.trialTime}</strong>
-                </div>
-                <div>
-                  <span>Batch Plan</span>
-                  <strong>{enrollmentForm.batch}</strong>
-                </div>
-                <div>
-                  <span>Payment</span>
-                  <strong>
-                    {enrollmentForm.paymentStatus === 'paid' ? 'Paid - Ready to Enroll' : 'Pending Payment'}
-                  </strong>
-                </div>
-              </div>
-            </aside>
           </div>
         </section>
 
       </main>
+
+      <footer className="site-footer" id="footer">
+        <div className="footer-inner">
+          <div className="footer-newsletter">
+            <p className="footer-brand">Trinetra Sports Shooting Academy</p>
+            <p className="footer-intro">
+              Get training updates, upcoming batch details, and academy news in your inbox.
+            </p>
+            <form className="newsletter-form" action={`mailto:${trialNotificationEmail}`} method="get">
+              <label className="sr-only" htmlFor="footer-email">Email address</label>
+              <span className="newsletter-icon" aria-hidden="true">✉</span>
+              <input id="footer-email" name="subject" type="email" placeholder="Enter your email address" required />
+              <button type="submit" aria-label="Subscribe by email">→</button>
+            </form>
+            <p className="newsletter-note">By subscribing, you agree to receive academy updates.</p>
+          </div>
+
+          <div className="footer-links-group">
+            <div>
+              <h3>Quick Links</h3>
+              <nav aria-label="Footer navigation">
+                <a href="#programs">Programs</a>
+                <a href="#coaches">Our Coaches</a>
+                <a href="#updates">Blogs &amp; News</a>
+                <a href="#admissions">Admissions</a>
+                <a href="#contact">Contact</a>
+              </nav>
+            </div>
+            <div>
+              <h3>Connect</h3>
+              <div className="footer-socials">
+                <a href={`mailto:${trialNotificationEmail}`}>Email Us</a>
+                <a href="tel:+919971764244">Call Academy</a>
+                <a href="https://wa.me/919971764244" target="_blank" rel="noreferrer">WhatsApp</a>
+              </div>
+            </div>
+            <div>
+              <h3>Socials</h3>
+              <div className="footer-socials">
+                <a href="https://www.instagram.com/trinetrashootingacademy26" target="_blank" rel="noreferrer">Instagram</a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
+                <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YouTube</a>
+              </div>
+            </div>
+          </div>
+
+          <address className="footer-contact">
+            <h3>Contact Us</h3>
+            <a href="tel:+919971764244"><span aria-hidden="true">☎</span> +91 99717 64244</a>
+            <a href="tel:+919098914312"><span aria-hidden="true">☎</span> +91 90989 14312</a>
+            <a href={`mailto:${trialNotificationEmail}`}><span aria-hidden="true">✉</span> {trialNotificationEmail}</a>
+            <p><span aria-hidden="true">⌖</span> Contact us for academy location and batch availability.</p>
+          </address>
+        </div>
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} Trinetra Sports Shooting Academy. All rights reserved.</p>
+          <a className="back-to-top" href="#home" aria-label="Back to top">↑</a>
+        </div>
+      </footer>
 
       <button
         type="button"
@@ -768,6 +893,37 @@ function App() {
               </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {selectedArticle ? (
+        <div className="article-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="article-popup-title">
+          <article className="article-popup-card">
+            <button type="button" className="article-popup-close" onClick={() => setSelectedArticle(null)} aria-label="Close article">×</button>
+            <img src={selectedArticle.image} alt="Shooting academy blog article" />
+            <div className="article-popup-content">
+              <p className="update-keyword">{selectedArticle.keyword}</p>
+              <h2 id="article-popup-title">{selectedArticle.summary.split(/\n\s*\n/)[0]}</h2>
+              {selectedArticle.content.map((section, index) => (
+                <section key={section.heading ?? index} className="article-content-section">
+                  {section.heading ? <h3>{section.heading}</h3> : null}
+                  {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  {section.points ? (
+                    <div className="article-points">
+                      {section.points.map(([title, detail]) => (
+                        <div key={title}>
+                          <h4>{title}</h4>
+                          <p>{detail}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                  {section.list ? <ul>{section.list.map((item) => <li key={item}>{item}</li>)}</ul> : null}
+                  {section.cycle ? <p className="training-cycle">{section.cycle}</p> : null}
+                </section>
+              ))}
+            </div>
+          </article>
         </div>
       ) : null}
 
