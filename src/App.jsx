@@ -23,6 +23,7 @@ const trialNotificationEmail = 'trinetrasports26@gmail.com'
 const coaches = [
   {
     name: 'Coach Hemant Choudhary',
+    label: 'Meet Our Mentor',
     photo: '/gallery/shot-7.jpeg',
     highlights: [
       'Renowned competitive shooter',
@@ -39,6 +40,7 @@ const coaches = [
   },
   {
     name: 'Coach Himanshu Singh',
+    label: 'Meet the Coach',
     photo: '/gallery/shot-6.jpeg',
     highlights: [
       '7+ years of competitive 10m Air Pistol shooting experience',
@@ -439,7 +441,7 @@ function App() {
                 Book Intro Session
               </a>
               <a className="btn btn-ghost" href="#programs">
-                Explore Programs
+                Show Program Details
               </a>
             </div>
           </div>
@@ -474,14 +476,14 @@ function App() {
         <div>
           <p className="kicker">Ready To Start?</p>
           <h2>Join The Next Intro Batch</h2>
-          <p className="muted">Phone: 9971764244 && 9098914312 | Email: trinetrasports26@gmail.com </p>
+          <p className="muted">Phone: 9971764244 & 9058914312 | Email: trinetrasports26@gmail.com </p>
         </div>
         <a className="btn btn-primary" href="#admissions">
           Reserve Your Spot
         </a>
       </section>
 
-      <section className="section programs-overview" aria-label="Our programs">
+      <section className="section programs-overview" id="programs" aria-label="Our programs">
         <div className="section-head">
           <p className="kicker">Our Programs</p>
           <h2>Find The Right Training Path</h2>
@@ -519,7 +521,7 @@ function App() {
                   <img src={coach.photo} alt={coach.name} />
                 </div>
                 <div className="coach-about">
-                  <p className="coach-eyebrow">Meet the coach</p>
+                  <p className="coach-eyebrow">{coach.label}</p>
                   <h3>{coach.name}</h3>
                   <ul className="coach-highlights">
                     {coach.highlights.slice(0, expandedCoach === coach.name ? coach.highlights.length : 4).map((highlight) => (
@@ -556,7 +558,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section" id="programs">
+        <section className="section" id="why-join">
           <div className="section-head">
             <p className="kicker">The Trinetra Difference</p>
             <h2>Why Join Trinetra Sports Shooting Academy?</h2>
@@ -665,7 +667,7 @@ function App() {
                     Phone
                     <input
                       required
-                      placeholder="+1 000 000 0000"
+                      placeholder="+91 000 000 0000"
                       value={trialForm.phone}
                       onChange={(event) =>
                         setTrialForm((prev) => ({ ...prev, phone: event.target.value }))
@@ -749,7 +751,7 @@ function App() {
                   Phone
                   <input
                     required
-                    placeholder="+1 000 000 0000"
+                    placeholder="+91 000 000 0000"
                     value={enrollmentForm.phone}
                     onChange={(event) =>
                       setEnrollmentForm((prev) => ({ ...prev, phone: event.target.value }))
@@ -852,9 +854,17 @@ function App() {
           <address className="footer-contact">
             <h3>Contact Us</h3>
             <a href="tel:+919971764244"><span aria-hidden="true">☎</span> +91 99717 64244</a>
-            <a href="tel:+919098914312"><span aria-hidden="true">☎</span> +91 90989 14312</a>
+            <a href="tel:+919058914312"><span aria-hidden="true">☎</span> +91 90589 14312</a>
             <a href={`mailto:${trialNotificationEmail}`}><span aria-hidden="true">✉</span> {trialNotificationEmail}</a>
-            <p><span aria-hidden="true">⌖</span> Contact us for academy location and batch availability.</p>
+            <a
+              className="footer-location"
+              href="https://www.google.com/maps/place/Trinetra+sports+shooting+academy/@28.6021499,77.348953,17z/data=!3m1!4b1!4m6!3m5!1s0x390ce520ecf60613:0xa5c0e9b7899f51dc!8m2!3d28.6021499!4d77.348953!16s%2Fg%2F11zh9hr_tz!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span aria-hidden="true">⌖</span>
+              <span>D-94B, Sector 55, Noida<br />Green Ribbon International School</span>
+            </a>
           </address>
         </div>
         <div className="footer-bottom">

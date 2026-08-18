@@ -1023,8 +1023,9 @@ main .section:nth-child(even) {
 .site-footer a:hover { color: var(--accent-soft); }
 .footer-contact { font-style: normal; }
 .footer-contact h3 { margin-bottom: 0.3rem; }
-.footer-contact a span,
+.footer-contact > a > span:first-child,
 .footer-contact p span { display: inline-block; width: 1.45rem; color: var(--accent); font-size: 1.15rem; }
+.footer-location { display: grid; grid-template-columns: 1.45rem 1fr; gap: 0.1rem; line-height: 1.5; }
 .footer-contact p { margin: 0.4rem 0 0; }
 
 .footer-bottom {
