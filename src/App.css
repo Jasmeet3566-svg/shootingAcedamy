@@ -388,6 +388,8 @@ main .section:nth-child(even) {
 .article-points { display: grid; gap: 0.9rem; }
 .article-points p { margin-top: 0.25rem; }
 .training-cycle { padding: 0.85rem 1rem; border-left: 3px solid var(--accent); color: var(--text-strong) !important; background: #f7eee2; font-weight: 700; letter-spacing: 0.02em; }
+.article-source-link { display: inline-flex; margin-top: 1.5rem; color: var(--accent); font-weight: 700; text-decoration: none; }
+.article-source-link:hover { color: #a6641d; }
 
 .split {
   display: grid;

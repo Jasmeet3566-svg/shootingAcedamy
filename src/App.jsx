@@ -63,6 +63,46 @@ const academyUpdates = [
     link: 'https://www.gunforglory.in/rifle-vs-pistol/',
     summary: 'Rifle vs Pistol: 7 Ways to Know Which Is Right for You\n\nOne of the first questions every beginner asks before starting...',
     image: '/gallery/shot-9.jpeg',
+    content: [
+      {
+        paragraphs: [
+          'Choosing between rifle and pistol is one of the first decisions many new shooters consider. Both are precision sports that reward patience, discipline and repeatable technique, but they create very different shooting experiences.',
+          'The best starting point is not to look for a universally “better” discipline. Instead, understand the differences, try both under qualified supervision and choose the event that best fits your interests and development goals.',
+        ],
+      },
+      {
+        heading: '1. How the Equipment Is Held',
+        paragraphs: ['A rifle is supported by both hands and rests against the shoulder, giving the shooter several points of contact. A pistol is normally held in one extended hand, so small movements in the wrist, arm or body can have a more visible effect on the shot.'],
+      },
+      {
+        heading: '2. Stability and Learning Feel',
+        paragraphs: ['Rifle beginners often experience a more supported shooting position. Pistol shooting can feel less stable at first because it requires the shooter to develop control through one arm and a precise grip. Both paths become highly technical as the athlete progresses.'],
+      },
+      {
+        heading: '3. Physical Demands',
+        paragraphs: ['Rifle training places strong emphasis on posture, core control and holding aligned positions. Pistol training develops shoulder endurance, arm stability and fine wrist control. Structured conditioning helps athletes stay steady throughout a full session.'],
+      },
+      {
+        heading: '4. Focus and Mental Control',
+        paragraphs: ['Both disciplines demand concentration, but the routine can feel different. Rifle shooters work on stillness, alignment and consistent execution over long sequences. Pistol shooters must manage movement and maintain calm control through every release.'],
+      },
+      {
+        heading: '5. Equipment and Training Setup',
+        paragraphs: ['The equipment, clothing and accessories vary between the disciplines. At the academy, coaches can introduce beginners to suitable equipment and explain how each setup supports safe, responsible practice.'],
+      },
+      {
+        heading: '6. Competition Pathway',
+        paragraphs: ['Both rifle and pistol offer structured opportunities to progress from introductory training to recognised competitions. As skills grow, athletes can explore events that match their strengths, interests and long-term competitive goals.'],
+      },
+      {
+        heading: '7. The Best Way to Choose',
+        paragraphs: ['The most useful answer comes from guided experience. A supervised trial allows a beginner to understand the feel of each discipline, receive coach feedback and begin with the fundamentals that suit them best.'],
+      },
+      {
+        heading: 'Start With Safe, Structured Training',
+        paragraphs: ['Whichever discipline you choose, progress comes from safe practice, good coaching and a consistent process. Focus on learning the basics well, then build confidence and performance one shot at a time.'],
+      },
+    ],
   },
   {
     keyword: 'Blog',
@@ -932,6 +972,11 @@ function App() {
                   {section.cycle ? <p className="training-cycle">{section.cycle}</p> : null}
                 </section>
               ))}
+              {selectedArticle.link ? (
+                <a className="article-source-link" href={selectedArticle.link} target="_blank" rel="noreferrer">
+                  View the original article source &rarr;
+                </a>
+              ) : null}
             </div>
           </article>
         </div>
