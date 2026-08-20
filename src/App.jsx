@@ -551,7 +551,6 @@ function App() {
         <section className="section" id="coaches">
           <div className="section-head">
             <p className="kicker">Instruction Team</p>
-            <h2>Meet Your Coaches</h2>
           </div>
           <div className="coach-list">
             {coaches.map((coach) => (
