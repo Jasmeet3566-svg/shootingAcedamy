@@ -388,8 +388,6 @@ main .section:nth-child(even) {
 .article-points { display: grid; gap: 0.9rem; }
 .article-points p { margin-top: 0.25rem; }
 .training-cycle { padding: 0.85rem 1rem; border-left: 3px solid var(--accent); color: var(--text-strong) !important; background: #f7eee2; font-weight: 700; letter-spacing: 0.02em; }
-.article-source-link { display: inline-flex; margin-top: 1.5rem; color: var(--accent); font-weight: 700; text-decoration: none; }
-.article-source-link:hover { color: #a6641d; }
 
 .split {
   display: grid;
@@ -466,6 +464,22 @@ main .section:nth-child(even) {
   display: block;
   object-fit: cover;
   object-position: center 28%;
+}
+
+.coach-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(9, 14, 16, 0.7);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .coach-about { padding: 1.2rem 1.25rem 1.35rem; }

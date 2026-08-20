@@ -22,7 +22,7 @@ const academyName = 'Trinetra Sports Shooting Acadmey'
 const trialNotificationEmail = 'trinetrasports26@gmail.com'
 const coaches = [
   {
-    name: 'Coach Hemant Choudhary',
+    name: 'Mr. Hemant Choudhary',
     label: 'Meet Our Mentor',
     photo: '/gallery/shot-7.jpeg',
     highlights: [
@@ -40,7 +40,7 @@ const coaches = [
   },
   {
     name: 'Coach Himanshu Singh',
-    label: 'Meet the Coach',
+    label: 'Meet Our Coach',
     photo: '/gallery/shot-6.jpeg',
     highlights: [
       '7+ years of competitive 10m Air Pistol shooting experience',
@@ -60,7 +60,6 @@ const coaches = [
 const academyUpdates = [
   {
     keyword: 'Blog',
-    link: 'https://www.gunforglory.in/rifle-vs-pistol/',
     summary: 'Rifle vs Pistol: 7 Ways to Know Which Is Right for You\n\nOne of the first questions every beginner asks before starting...',
     image: '/gallery/shot-9.jpeg',
     content: [
@@ -559,9 +558,9 @@ function App() {
               <article key={coach.name} className="coach-slide">
                 <div className="coach-photo">
                   <img src={coach.photo} alt={coach.name} />
+                  <span className="coach-badge">{coach.label}</span>
                 </div>
                 <div className="coach-about">
-                  <p className="coach-eyebrow">{coach.label}</p>
                   <h3>{coach.name}</h3>
                   <ul className="coach-highlights">
                     {coach.highlights.slice(0, expandedCoach === coach.name ? coach.highlights.length : 4).map((highlight) => (
@@ -972,11 +971,6 @@ function App() {
                   {section.cycle ? <p className="training-cycle">{section.cycle}</p> : null}
                 </section>
               ))}
-              {selectedArticle.link ? (
-                <a className="article-source-link" href={selectedArticle.link} target="_blank" rel="noreferrer">
-                  View the original article source &rarr;
-                </a>
-              ) : null}
             </div>
           </article>
         </div>
